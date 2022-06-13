@@ -1,0 +1,21 @@
+40 20
+              v
+ pppqpppp     vppppppppppppppppppppppp
+ pppppppp     v              ppppp0ppp
++pppppppp     v              ppppppppp
+ ppppppppppppphppppppp
+ pppppppp     v      p
+              v      p
+vvvvvvvvvvvvvvv      p     ####
+                     p    ##r8###
+                     p    #..s..#
+                     p    #.....#
+                     p    #.....#
+#############        p    #.....#
+#........w..#    ####m### #####.#
+#...........######......# #.....#
+#.......................# #..####
+@...........######......###..#
+#...........#    #.........w.#
+#...........#    #......######
+#############    ########
