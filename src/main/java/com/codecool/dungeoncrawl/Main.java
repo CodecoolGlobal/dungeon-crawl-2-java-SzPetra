@@ -1,35 +1,34 @@
 package com.codecool.dungeoncrawl;
 
-import com.codecool.dungeoncrawl.dao.GameDatabaseManager;
 import com.codecool.dungeoncrawl.logic.Cell;
 import com.codecool.dungeoncrawl.logic.GameMap;
 import com.codecool.dungeoncrawl.logic.MapLoader;
-import com.codecool.dungeoncrawl.logic.actors.Player;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.sql.SQLException;
+import java.util.List;
 
 public class Main extends Application {
-    GameMap map = MapLoader.loadMap();
+
+    GameMap map = MapLoader.loadMap("/map.txt");
+    GameMap map2 = MapLoader.loadMap("/secondmap.txt");
     Canvas canvas = new Canvas(
             map.getWidth() * Tiles.TILE_WIDTH,
             map.getHeight() * Tiles.TILE_WIDTH);
     GraphicsContext context = canvas.getGraphicsContext2D();
-    Label healthLabel = new Label();
-    GameDatabaseManager dbManager;
+
+    private boolean secondMap = false;
+    private GridPane ui = new GridPane();
 
     public static void main(String[] args) {
         launch(args);
@@ -37,13 +36,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        setupDbManager();
-        GridPane ui = new GridPane();
         ui.setPrefWidth(200);
         ui.setPadding(new Insets(10));
 
-        ui.add(new Label("Health: "), 0, 0);
-        ui.add(healthLabel, 1, 0);
 
         BorderPane borderPane = new BorderPane();
 
@@ -51,81 +46,102 @@ public class Main extends Application {
         borderPane.setRight(ui);
 
         Scene scene = new Scene(borderPane);
+
         primaryStage.setScene(scene);
-        refresh();
+
+        refreshMap(map);
+
         scene.setOnKeyPressed(this::onKeyPressed);
-        scene.setOnKeyReleased(this::onKeyReleased);
 
         primaryStage.setTitle("Dungeon Crawl");
         primaryStage.show();
     }
 
-    private void onKeyReleased(KeyEvent keyEvent) {
-        KeyCombination exitCombinationMac = new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN);
-        KeyCombination exitCombinationWin = new KeyCodeCombination(KeyCode.F4, KeyCombination.ALT_DOWN);
-        if (exitCombinationMac.match(keyEvent)
-                || exitCombinationWin.match(keyEvent)
-                || keyEvent.getCode() == KeyCode.ESCAPE) {
-            exit();
+    private void refreshUI(GameMap map) {
+        ui.getChildren().clear();
+
+        int rowNum = 2;
+
+        Label inventoryLabel = new Label("INVENTORY");
+        ui.add(inventoryLabel, 0, 0);
+
+        Label playerHealth = new Label(String.format("Player health: %d", map.getPlayer().getHealth()));
+        ui.add(playerHealth, 0, 1);
+
+        List<String> playerItems = map.getPlayer().getPlayerItemAsString();
+        for (String item : playerItems) {
+            Label label = new Label(item);
+            ui.add(label, 0, rowNum);
+            rowNum++;
+        }
+
+        Label separator = new Label("MONSTER HEALTH");
+        ui.add(separator, 0, rowNum++);
+
+        List<String> monsterStats = map.getMonsterStat();
+        for (String monster : monsterStats) {
+            Label label = new Label(monster);
+            ui.add(label, 0, rowNum);
+            rowNum++;
         }
     }
+
 
     private void onKeyPressed(KeyEvent keyEvent) {
+        GameMap actualMap;
+        if (secondMap) {
+            actualMap = map2;
+        } else {
+            actualMap = map;
+        }
+
         switch (keyEvent.getCode()) {
             case UP:
-                map.getPlayer().move(0, -1);
-                refresh();
+                actualMap.getPlayer().move(0, -1);
+                refreshMap(actualMap);
                 break;
             case DOWN:
-                map.getPlayer().move(0, 1);
-                refresh();
+                actualMap.getPlayer().move(0, 1);
+                refreshMap(actualMap);
                 break;
             case LEFT:
-                map.getPlayer().move(-1, 0);
-                refresh();
+                actualMap.getPlayer().move(-1, 0);
+                refreshMap(actualMap);
                 break;
             case RIGHT:
-                map.getPlayer().move(1, 0);
-                refresh();
-                break;
-            case S:
-                Player player = map.getPlayer();
-                dbManager.savePlayer(player);
+                actualMap.getPlayer().move(1, 0);
+                refreshMap(actualMap);
                 break;
         }
     }
 
-    private void refresh() {
-        context.setFill(Color.BLACK);
-        context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for (int x = 0; x < map.getWidth(); x++) {
-            for (int y = 0; y < map.getHeight(); y++) {
-                Cell cell = map.getCell(x, y);
-                if (cell.getActor() != null) {
-                    Tiles.drawTile(context, cell.getActor(), x, y);
-                } else {
-                    Tiles.drawTile(context, cell, x, y);
+    private void refreshMap(GameMap map) {
+        if (map.getPlayer().isExitFirstMap()) {
+            secondMap = true;
+        } else {
+            map.moveMonsters();
+            context.setFill(Color.BLACK);
+            context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            for (int x = 0; x < map.getWidth(); x++) {
+                for (int y = 0; y < map.getHeight(); y++) {
+                    Cell cell = map.getCell(x, y);
+                    if (cell.getActor() != null) {
+                        Tiles.drawTile(context, cell.getActor(), x, y);
+                    } else if (cell.getItem() != null) {
+                        Tiles.drawTile(context, cell.getItem(), x, y);
+
+                    } else if (cell.getMapItem() != null) {
+                        Tiles.drawTile(context, cell.getMapItem(), x, y);
+                    } else {
+                        Tiles.drawTile(context, cell, x, y);
+                    }
                 }
             }
-        }
-        healthLabel.setText("" + map.getPlayer().getHealth());
-    }
+            if (map.getPlayer().isDead()) {
+                System.exit(0);
+            }
+            refreshUI(map);
 
-    private void setupDbManager() {
-        dbManager = new GameDatabaseManager();
-        try {
-            dbManager.setup();
-        } catch (SQLException ex) {
-            System.out.println("Cannot connect to database.");
         }
-    }
-
-    private void exit() {
-        try {
-            stop();
-        } catch (Exception e) {
-            System.exit(1);
-        }
-        System.exit(0);
     }
 }
