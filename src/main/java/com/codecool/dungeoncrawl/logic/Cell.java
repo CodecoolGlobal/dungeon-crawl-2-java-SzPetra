@@ -1,10 +1,18 @@
 package com.codecool.dungeoncrawl.logic;
 
 import com.codecool.dungeoncrawl.logic.actors.Actor;
+import com.codecool.dungeoncrawl.logic.mapItems.MapItem;
+import com.codecool.dungeoncrawl.logic.playerItems.PlayerItem;
 
 public class Cell implements Drawable {
     private CellType type;
     private Actor actor;
+
+
+
+
+    private MapItem mapItem;
+    private PlayerItem pLayerItem;
     private GameMap gameMap;
     private int x, y;
 
@@ -22,9 +30,22 @@ public class Cell implements Drawable {
     public void setType(CellType type) {
         this.type = type;
     }
-
+    public PlayerItem getItem() {
+        return pLayerItem;
+    }
+    public MapItem getMapItem() {
+        return mapItem;
+    }
     public void setActor(Actor actor) {
         this.actor = actor;
+    }
+
+    public void setPlayerItem(PlayerItem playerItem){
+        this.pLayerItem = playerItem;
+    }
+
+    public void setMapItem(MapItem mapItem){
+        this.mapItem = mapItem;
     }
 
     public Actor getActor() {
