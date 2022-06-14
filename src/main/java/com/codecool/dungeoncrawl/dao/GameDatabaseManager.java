@@ -7,12 +7,17 @@ import com.codecool.dungeoncrawl.model.PlayerModel;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.sql.SQLException;
-import java.util.Date;
+import java.sql.Time;
+import java.time.LocalTime;
+
 
 public class GameDatabaseManager {
     private PlayerDao playerDao;
     private GameStateDao gameDao;
+
+    private Date date;
 
     public void setup() throws SQLException {
         DataSource dataSource = connect();
@@ -36,8 +41,9 @@ public class GameDatabaseManager {
     public void createNewSave(GameMap map) {
         Player player = map.getPlayer();
         PlayerModel playerModel = savePlayer(player);
-        Date date = new Date();
-        GameState gameState = new GameState("map.txt", date, playerModel);
+        LocalTime localTime = LocalTime.now();
+        Date saveTime = Date.valueOf(String.valueOf(localTime));
+        GameState gameState = new GameState("map.txt",saveTime, playerModel);
     }
 
     private DataSource connect() throws SQLException {
