@@ -9,9 +9,8 @@ import org.postgresql.ds.PGSimpleDataSource;
 import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.time.LocalTime;
-
+import java.sql.Date;
 
 public class GameDatabaseManager {
     private PlayerDao playerDao;
