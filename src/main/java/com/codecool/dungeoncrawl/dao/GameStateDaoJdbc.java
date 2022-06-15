@@ -91,7 +91,6 @@ public class GameStateDaoJdbc implements GameStateDao {
                     "FROM game_state\n" +
                     "inner join player on player.id = game_state.player_id\n";
             PreparedStatement statement = conn.prepareStatement(sql);
-            statement.executeUpdate();
             ResultSet rs = statement.executeQuery();
             List<GameState> gameStates = new ArrayList<>();
             while (rs.next()) {
@@ -117,7 +116,7 @@ public class GameStateDaoJdbc implements GameStateDao {
 
 
         } catch (SQLException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 }

@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.sql.Date;
+import java.util.List;
 
 public class GameDatabaseManager {
     private PlayerDao playerDao;
@@ -23,6 +24,10 @@ public class GameDatabaseManager {
         DataSource dataSource = connect();
         playerDao = new PlayerDaoJdbc(dataSource);
         gameDao = new GameStateDaoJdbc(dataSource);
+    }
+
+    public List<GameState> getAllGameStates(){
+        return gameDao.getAll();
     }
 
     private PlayerModel savePlayer(Player player) {

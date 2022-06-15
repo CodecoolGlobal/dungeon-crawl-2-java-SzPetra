@@ -8,6 +8,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -18,6 +19,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -28,6 +30,7 @@ import java.util.List;
 public class Main extends Application implements EventHandler<ActionEvent> {
 
     Stage secondaryStage = new Stage();
+    Stage loadsStage = new Stage();
     Button saveButton;
     Button loadButton;
     GameMap map = MapLoader.loadMap("/map.txt");
@@ -158,6 +161,8 @@ public class Main extends Application implements EventHandler<ActionEvent> {
     }
 
     public void saveWindow() {
+        Label label = new Label();
+        label.setText("Save or Load");
 
         secondaryStage.setTitle("Save Game State");
 
@@ -165,18 +170,42 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         saveButton.setText("SAVE");
         saveButton.setOnAction(this);
 
-        /*loadButton = new Button();
+        loadButton = new Button();
         loadButton.setText("LOAD");
-        loadButton.setOnAction(this);*/
+        loadButton.setOnAction(this);
 
-        StackPane layout = new StackPane();
-        layout.getChildren().add(saveButton);
-        //layout.getChildren().add(loadButton);
-
+        VBox layout = new VBox();
+        layout.getChildren().addAll(label, saveButton, loadButton);
+        layout.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(layout, 300, 250);
         secondaryStage.setScene(scene);
         secondaryStage.show();
+
+
+    }
+
+    public void loadStates(){
+        GameDatabaseManager gameDatabaseManager = new GameDatabaseManager();
+        try {
+            gameDatabaseManager.setup();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(gameDatabaseManager.getAllGameStates());
+        VBox layout = new VBox();
+
+        Label label1 = new Label();
+        label1.setText("Saved States");
+
+        Label label2 = new Label();
+        label2.setText("Saved States");
+
+        layout.getChildren().addAll(label1, label2);
+
+        Scene scene = new Scene(layout, 400, 400);
+        loadsStage.setScene(scene);
+        loadsStage.show();
     }
 
     @Override
@@ -194,10 +223,9 @@ public class Main extends Application implements EventHandler<ActionEvent> {
             else {
                 gameDatabaseManager.createNewSave(map);
             }
-
         }
         if(actionEvent.getSource() == loadButton) {
-            System.out.println("this is the load button");
+            loadStates();
         }
     }
 }
