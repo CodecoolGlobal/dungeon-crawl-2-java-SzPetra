@@ -9,9 +9,9 @@ import org.postgresql.ds.PGSimpleDataSource;
 import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
-
+import java.sql.Date;
 
 public class GameDatabaseManager {
     private PlayerDao playerDao;
@@ -41,9 +41,9 @@ public class GameDatabaseManager {
     public void createNewSave(GameMap map) {
         Player player = map.getPlayer();
         PlayerModel playerModel = savePlayer(player);
-        LocalTime localTime = LocalTime.now();
-        Date saveTime = Date.valueOf(String.valueOf(localTime));
-        GameState gameState = new GameState("map.txt",saveTime, playerModel);
+        Date localDate = new Date(System.currentTimeMillis());
+        GameState gameState = new GameState(map.convertToString(),localDate, playerModel);
+        saveGameState(gameState);
     }
 
     private DataSource connect() throws SQLException {

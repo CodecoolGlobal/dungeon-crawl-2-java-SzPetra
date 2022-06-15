@@ -1,25 +1,35 @@
 package com.codecool.dungeoncrawl;
 
+import com.codecool.dungeoncrawl.dao.GameDatabaseManager;
 import com.codecool.dungeoncrawl.logic.Cell;
 import com.codecool.dungeoncrawl.logic.GameMap;
 import com.codecool.dungeoncrawl.logic.MapLoader;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
-public class Main extends Application {
+public class Main extends Application implements EventHandler<ActionEvent> {
 
+    Stage secondaryStage = new Stage();
+    Button saveButton;
+    Button loadButton;
     GameMap map = MapLoader.loadMap("/map.txt");
     GameMap map2 = MapLoader.loadMap("/secondmap.txt");
     Canvas canvas = new Canvas(
@@ -112,6 +122,8 @@ public class Main extends Application {
                 actualMap.getPlayer().move(1, 0);
                 refreshMap(actualMap);
                 break;
+            case S:
+                saveWindow();
         }
     }
 
@@ -142,6 +154,50 @@ public class Main extends Application {
             }
             refreshUI(map);
 
+        }
+    }
+
+    public void saveWindow() {
+
+        secondaryStage.setTitle("Save Game State");
+
+        saveButton = new Button();
+        saveButton.setText("SAVE");
+        saveButton.setOnAction(this);
+
+        /*loadButton = new Button();
+        loadButton.setText("LOAD");
+        loadButton.setOnAction(this);*/
+
+        StackPane layout = new StackPane();
+        layout.getChildren().add(saveButton);
+        //layout.getChildren().add(loadButton);
+
+
+        Scene scene = new Scene(layout, 300, 250);
+        secondaryStage.setScene(scene);
+        secondaryStage.show();
+    }
+
+    @Override
+    public void handle(ActionEvent actionEvent) {
+        GameDatabaseManager gameDatabaseManager = new GameDatabaseManager();
+        try {
+            gameDatabaseManager.setup();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if(actionEvent.getSource() == saveButton) {
+            if (map.getPlayer().isExitFirstMap()) {
+                gameDatabaseManager.createNewSave(map2);
+            }
+            else {
+                gameDatabaseManager.createNewSave(map);
+            }
+
+        }
+        if(actionEvent.getSource() == loadButton) {
+            System.out.println("this is the load button");
         }
     }
 }

@@ -1,9 +1,6 @@
 package com.codecool.dungeoncrawl.logic;
 
-import com.codecool.dungeoncrawl.logic.actors.Ghost;
-import com.codecool.dungeoncrawl.logic.actors.Keeper;
-import com.codecool.dungeoncrawl.logic.actors.Player;
-import com.codecool.dungeoncrawl.logic.actors.Skeleton;
+import com.codecool.dungeoncrawl.logic.actors.*;
 import com.codecool.dungeoncrawl.logic.mapItems.*;
 import com.codecool.dungeoncrawl.logic.playerItems.*;
 
@@ -11,6 +8,10 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 public class MapLoader {
+
+
+
+
     public static GameMap loadMap(String file) {
         InputStream is = MapLoader.class.getResourceAsStream(file);
         Scanner scanner = new Scanner(is);
@@ -139,5 +140,7 @@ public class MapLoader {
         }
         return map;
     }
+
+
 
 }
