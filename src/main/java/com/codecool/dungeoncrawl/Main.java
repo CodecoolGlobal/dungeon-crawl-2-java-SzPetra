@@ -4,6 +4,8 @@ import com.codecool.dungeoncrawl.logic.Cell;
 import com.codecool.dungeoncrawl.logic.GameMap;
 import com.codecool.dungeoncrawl.logic.MapLoader;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
@@ -21,9 +23,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
 
-public class Main extends Application {
+public class Main extends Application implements EventHandler<ActionEvent> {
 
     Stage secondaryStage = new Stage();
+    Button saveButton;
+    Button loadButton;
     GameMap map = MapLoader.loadMap("/map.txt");
     GameMap map2 = MapLoader.loadMap("/secondmap.txt");
     Canvas canvas = new Canvas(
@@ -155,15 +159,31 @@ public class Main extends Application {
 
         secondaryStage.setTitle("Save Game State");
 
-        Button button = new Button();
-        button.setText("SAVE");
+        saveButton = new Button();
+        saveButton.setText("SAVE");
+        saveButton.setOnAction(this);
+
+        /*loadButton = new Button();
+        loadButton.setText("LOAD");
+        loadButton.setOnAction(this);*/
 
         StackPane layout = new StackPane();
-        layout.getChildren().add(button);
+        layout.getChildren().add(saveButton);
+        //layout.getChildren().add(loadButton);
 
 
         Scene scene = new Scene(layout, 300, 250);
         secondaryStage.setScene(scene);
         secondaryStage.show();
+    }
+
+    @Override
+    public void handle(ActionEvent actionEvent) {
+        if(actionEvent.getSource() == saveButton) {
+            System.exit(0);
+        }
+        if(actionEvent.getSource() == loadButton) {
+            System.out.println("this is the load button");
+        }
     }
 }
