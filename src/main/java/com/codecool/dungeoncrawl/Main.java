@@ -9,17 +9,21 @@ import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.List;
 
 public class Main extends Application {
 
+    Stage secondaryStage = new Stage();
     GameMap map = MapLoader.loadMap("/map.txt");
     GameMap map2 = MapLoader.loadMap("/secondmap.txt");
     Canvas canvas = new Canvas(
@@ -112,6 +116,8 @@ public class Main extends Application {
                 actualMap.getPlayer().move(1, 0);
                 refreshMap(actualMap);
                 break;
+            case S:
+                saveWindow();
         }
     }
 
@@ -143,5 +149,21 @@ public class Main extends Application {
             refreshUI(map);
 
         }
+    }
+
+    public void saveWindow() {
+
+        secondaryStage.setTitle("Save Game State");
+
+        Button button = new Button();
+        button.setText("SAVE");
+
+        StackPane layout = new StackPane();
+        layout.getChildren().add(button);
+
+
+        Scene scene = new Scene(layout, 300, 250);
+        secondaryStage.setScene(scene);
+        secondaryStage.show();
     }
 }
