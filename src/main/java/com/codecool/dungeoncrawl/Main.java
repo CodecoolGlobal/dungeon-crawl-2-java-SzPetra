@@ -1,5 +1,6 @@
 package com.codecool.dungeoncrawl;
 
+import com.codecool.dungeoncrawl.dao.GameDatabaseManager;
 import com.codecool.dungeoncrawl.logic.Cell;
 import com.codecool.dungeoncrawl.logic.GameMap;
 import com.codecool.dungeoncrawl.logic.MapLoader;
@@ -21,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 public class Main extends Application implements EventHandler<ActionEvent> {
@@ -179,8 +181,20 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent actionEvent) {
+        GameDatabaseManager gameDatabaseManager = new GameDatabaseManager();
+        try {
+            gameDatabaseManager.setup();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         if(actionEvent.getSource() == saveButton) {
-            System.exit(0);
+            if (map.getPlayer().isExitFirstMap()) {
+                gameDatabaseManager.createNewSave(map2);
+            }
+            else {
+                gameDatabaseManager.createNewSave(map);
+            }
+
         }
         if(actionEvent.getSource() == loadButton) {
             System.out.println("this is the load button");

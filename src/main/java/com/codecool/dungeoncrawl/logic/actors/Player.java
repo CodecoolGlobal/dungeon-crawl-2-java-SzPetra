@@ -14,7 +14,7 @@ public class Player extends Actor {
         return name;
     }
 
-    private String name;
+    private String name = "Dani";
 
     private final int maxHealth = 10;
     public boolean isOpenStick() {
