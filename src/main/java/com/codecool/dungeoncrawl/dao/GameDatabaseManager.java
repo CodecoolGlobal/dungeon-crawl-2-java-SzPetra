@@ -7,6 +7,7 @@ import com.codecool.dungeoncrawl.model.PlayerModel;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.sql.Date;
@@ -14,6 +15,8 @@ import java.sql.Date;
 public class GameDatabaseManager {
     private PlayerDao playerDao;
     private GameStateDao gameDao;
+
+    private Date date;
 
     public void setup() throws SQLException {
         DataSource dataSource = connect();
